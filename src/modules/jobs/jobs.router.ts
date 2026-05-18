@@ -441,4 +441,7 @@ jobsRouter.post('/:id/notes', authenticate, allStaff, async (req: Request, res: 
   const result = await query(
     `INSERT INTO job_notes (job_id, created_by, content, note_type)
      VALUES ($1, $2, $3, $4) RETURNING *`,
-    [id, req.user!.id, co
+    [id, req.user!.id, content, note_type]
+  );
+  return created(res, result.rows[0]);
+});

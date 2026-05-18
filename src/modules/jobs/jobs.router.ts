@@ -421,3 +421,24 @@ jobsRouter.post('/:id/signature', authenticate, allStaff, async (req: Request, r
   );
   return ok(res, { saved: true });
 });
+// ── Job Notes ──────────────────────────────────────────────────
+jobsRouter.get('/:id/notes', authenticate, allStaff, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const notes = await query(
+    `SELECT n.*, u.name AS author_name FROM job_notes n
+     LEFT JOIN users u ON u.id = n.created_by
+     WHERE n.job_id = $1 ORDER BY n.created_at DESC`,
+    [id]
+  );
+  return ok(res, notes.rows);
+});
+
+jobsRouter.post('/:id/notes', authenticate, allStaff, async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { content, note_type = 'general' } = req.body;
+  if (!content) return badRequest(res, 'content is required');
+
+  const result = await query(
+    `INSERT INTO job_notes (job_id, created_by, content, note_type)
+     VALUES ($1, $2, $3, $4) RETURNING *`,
+    [id, req.user!.id, co

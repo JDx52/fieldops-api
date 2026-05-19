@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS work_orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES companies(id) ON DELETE CASCADE,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  wo_number VARCHAR(50) NOT NULL,
+  job_id UUID REFERENCES jobs(id) ON DELETE SET NULL,
+  customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
+  date VARCHAR(20), customer VARCHAR(255), billing_address TEXT,
+  phone VARCHAR(50), cell VARCHAR(50), email VARCHAR(255),
+  complaint TEXT, worked_by VARCHAR(255), unit_address TEXT,
+  unit_phone VARCHAR(50), unit_cell VARCHAR(50),
+  job_types JSONB DEFAULT '[]', equipment JSONB DEFAULT '[]',
+  technician VARCHAR(255), time_in VARCHAR(50), time_out VARCHAR(50),
+  travel_time VARCHAR(50), reg_hrs VARCHAR(50), ot_hrs VARCHAR(50),
+  rate VARCHAR(50), amount VARCHAR(50), checklist JSONB DEFAULT '[]',
+  description_of_work TEXT, recommendations TEXT,
+  materials JSONB DEFAULT '[]', service_type JSONB DEFAULT '[]',
+  total_amount VARCHAR(50), print_name VARCHAR(255),
+  signature TEXT, sign_date VARCHAR(20),
+  created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(company_id, wo_number)
+);
+CREATE INDEX IF NOT EXISTS idx_work_orders_company ON work_orders(company_id);
+CREATE INDEX IF NOT EXISTS idx_work_orders_customer ON work_orders(customer_id);
+CREATE INDEX IF NOT EXISTS idx_work_orders_job ON work_orders(job_id);
+CREATE INDEX IF NOT EXISTS idx_work_orders_created ON work_orders(created_at DESC);
